@@ -13,10 +13,12 @@ class Menu(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     date = models.DateField()
     items = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('restaurant', 'date')
+        ordering = ('-date',)
 
     def __str__(self):
         return f"Menu for {self.restaurant} on {self.date}"

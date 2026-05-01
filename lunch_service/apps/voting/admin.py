@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Vote
+
+
+@admin.register(Vote)
+class VoteAdmin(admin.ModelAdmin):
+    list_display = ("employee", "menu", "date", "created_at")
+    list_filter = ("date",)
+    ordering = ("-date",)
