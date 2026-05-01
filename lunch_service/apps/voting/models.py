@@ -1,4 +1,6 @@
 from django.db import models
+from django.conf import settings
+
 
 class Vote(models.Model):
     employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
