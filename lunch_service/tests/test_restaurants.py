@@ -2,13 +2,13 @@ import datetime
 import pytest
 from rest_framework import status
 
+
 @pytest.mark.django_db
 class TestRestaurantAPI:
     def test_create_restaurant_as_admin(self, admin_client):
-        response = admin_client.post("/api/restaurants/", {
-            "name": "Kulykivska",
-            "address": "Lviv, 1"
-        })
+        response = admin_client.post(
+            "/api/restaurants/", {"name": "Kulykivska", "address": "Lviv, 1"}
+        )
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_create_restaurant_as_user_fails(self, auth_client):
@@ -18,9 +18,11 @@ class TestRestaurantAPI:
     def test_upload_menu_as_admin(self, admin_client, restaurant):
         payload = {
             "date": datetime.date.today().isoformat(),
-            "items": [{"name": "Steak", "price": 200}]
+            "items": [{"name": "Steak", "price": 200}],
         }
-        response = admin_client.post(f"/api/restaurants/{restaurant.id}/menu/", payload, format="json")
+        response = admin_client.post(
+            f"/api/restaurants/{restaurant.id}/menu/", payload, format="json"
+        )
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_get_today_menus(self, auth_client, today_menu):

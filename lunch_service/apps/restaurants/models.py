@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Restaurant(models.Model):
     name = models.CharField(max_length=200, verbose_name="Restaurant Name")
     address = models.CharField(max_length=200, blank=True)
@@ -17,9 +18,8 @@ class Menu(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('restaurant', 'date')
-        ordering = ('-date',)
+        unique_together = ("restaurant", "date")
+        ordering = ("-date",)
 
     def __str__(self):
         return f"Menu for {self.restaurant} on {self.date}"
-

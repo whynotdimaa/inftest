@@ -1,6 +1,7 @@
 import pytest
 from rest_framework import status
 
+
 @pytest.mark.django_db
 class TestAuthAPI:
     def test_register_success(self, api_client):
@@ -14,10 +15,13 @@ class TestAuthAPI:
         assert response.data["username"] == "new_employee"
 
     def test_login_returns_tokens(self, api_client, employee):
-        response = api_client.post("/api/auth/login/", {
-            "username": employee.username,
-            "password": "StrongPass123!",
-        })
+        response = api_client.post(
+            "/api/auth/login/",
+            {
+                "username": employee.username,
+                "password": "StrongPass123!",
+            },
+        )
         assert response.status_code == status.HTTP_200_OK
         assert "access" in response.data
         assert "refresh" in response.data
