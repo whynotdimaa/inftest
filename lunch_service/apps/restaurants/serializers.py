@@ -19,6 +19,6 @@ class MenuSerializer(serializers.ModelSerializer):
         if not isinstance(value, list) or not value:
             raise serializers.ValidationError('Please enter a valid list')
         for item in value:
-            if not instance(item, dict) or 'name' not in item:
+            if not isinstance(item, dict) or 'name' not in item:
                 raise serializers.ValidationError('Each item must be an object with at least a "name" field')
         return value

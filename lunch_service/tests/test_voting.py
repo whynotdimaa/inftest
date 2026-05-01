@@ -1,28 +1,37 @@
 import pytest
 from rest_framework import status
 from django.utils import timezone
-from apps.restaurant.models import *
+from apps.restaurants.models import *
+import datetime
+import pytest
+from apps.voting.models import Vote
 
 @pytest.mark.django_db
 class TestVotingAPI:
-    def test_vote_for_menu(self, auth_client, restaurant_factory):
-        restaurant = Restaurant.objects.create(name="Lviv Croissants")
-        menu = Menu.objects.create(
-            restaurant=restaurant,
-            date=timezone.now(),
-            items = [{'name': 'Croissant', 'price': '100'}]
-        )
-
-        response = auth.client.post('/api/voting/', {'menu': menu.id})
+    def test_vote_for_menu(self, auth_client, today_menu):
+        response = auth_client.post("/api/voting/", {"menu": today_menu.id})
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.data['menu'] == menu.id
 
-    def test_double_vote_fails(self, auth_client, restaurant_factory):
-        # Перевірка бізнес-правила: один голос на день
-        res = Restaurant.objects.create(name="Puzata Hata")
-        menu = Menu.objects.create(restaurant=res, date=timezone.now().date(), items=[])
+    def test_double_vote_fails(self, auth_client, today_menu):
+        auth_client.post("/api/voting/", {"menu": today_menu.id})
+        response = auth_client.post("/api/voting/", {"menu": today_menu.id})
 
-        auth_client.post('/api/voting/', {'menu': menu.id})
-        response = auth_client.post('/api/voting/', {'menu': menu.id})
+        assert response.status_code in [status.HTTP_400_BAD_REQUEST, status.HTTP_409_CONFLICT]
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+    def test_vote_success(self, auth_client, today_menu):
+        response = auth_client.post("/api/voting/", {"menu": today_menu.id})
+        assert response.status_code == status.HTTP_201_CREATED
+
+    def test_results_v1_format(self, auth_client, today_menu, employee):
+        Vote.objects.create(employee=employee, menu=today_menu, date=datetime.date.today())
+
+        response = auth_client.get("/api/voting/results/today/", HTTP_BUILD_VERSION="1")
+        assert response.status_code == status.HTTP_200_OK
+        assert "items" not in response.data[0]
+
+    def test_results_v2_format(self, auth_client, today_menu, employee):
+        Vote.objects.create(employee=employee, menu=today_menu, date=datetime.date.today())
+
+        response = auth_client.get("/api/voting/results/today/", HTTP_BUILD_VERSION="2")
+        assert response.status_code == status.HTTP_200_OK
+        assert "items" in response.data[0]

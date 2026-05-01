@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions
+from rest_framework.permissions import AllowAny
 
 from .models import Employee
 from .serializers import EmployeeSerializer, RegisterSerializer
@@ -10,7 +11,7 @@ class RegisterView(generics.CreateAPIView):
 
     queryset = Employee.objects.all()
     serializer_class = RegisterSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [AllowAny]
 
 
 class MyView(generics.RetrieveAPIView):

@@ -20,12 +20,12 @@ class VoteSerializer(serializers.ModelSerializer):
 #різні формати залежно від версій
 
 class ResultItemV1Serializer(serializers.Serializer):
-    restaurant = serializers.CharField()
+    restaurant = serializers.CharField(source='menu__restaurant__name')
     votes = serializers.IntegerField()
 
 
 class ResultItemV2Serializer(serializers.Serializer):
-    restaurant = serializers.CharField()
+    restaurant = serializers.CharField(source='menu__restaurant__name')
     menu_id = serializers.IntegerField()
     votes = serializers.IntegerField()
     votes = serializers.IntegerField()
@@ -37,4 +37,3 @@ class ResultItemV2Serializer(serializers.Serializer):
             return menu.items
         except Menu.DoesNotExist:
             return []
-        

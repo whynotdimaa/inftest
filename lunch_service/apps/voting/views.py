@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from .models import Vote
 from .serializers import ResultItemV1Serializer, ResultItemV2Serializer, VoteSerializer
-from .services import get_today_results
+from .services import get_today_result
 
 MIN_VERSION_FOR_V2 = 2
 
@@ -54,7 +54,7 @@ class TodayResultsView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self,request):
-        results = get_today_results()
+        results = get_today_result()
         build_version = _get_build_version(request)
 
         if build_version >= MIN_VERSION_FOR_V2:

@@ -25,7 +25,7 @@ class RestaurantDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class MenuUploadView(generics.CreateAPIView):
@@ -36,6 +36,14 @@ class MenuUploadView(generics.CreateAPIView):
 
     serializer_class = MenuSerializer
     permission_classes = (permissions.IsAdminUser,)
+
+    def get_serializer(self, *args, **kwargs):
+        # Додаємо ID ресторану з URL до даних, які йдуть на валідацію
+        if 'data' in kwargs:
+            data = kwargs['data'].copy()
+            data['restaurant'] = self.kwargs.get('restaurant_id')
+            kwargs['data'] = data
+        return super().get_serializer(*args, **kwargs)
 
     def perform_create(self, serializer):
         restaurant = generics.get_object_or_404(Restaurant, pk=self.kwargs['restaurant_id'])
